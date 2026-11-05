@@ -40,7 +40,7 @@ your project's `.claude/skills/`, `.agents/skills/` or `.codex/skills/`.
 
 The skills drive a pinned release of the `safeworld` CLI through `scripts/sw`, a wrapper that
 writes every call and its result to `.safeworld/ledger.jsonl` (secrets redacted).
-`scripts/install_safeworld_cli.sh` installs the release into `~/.local/bin`. Until the public
-release channel exists, the installer downloads from the release mirror in
-`safeworldai/customer-examples`, which needs a GitHub account with access to that repository.
-Set `SAFEWORLD_CLI_REPO` to another mirror if SafeWorld gave you one.
+`scripts/install_safeworld_cli.sh` downloads the pinned release from this repository's
+[Releases](https://github.com/safeworldai/skills/releases) page with `curl` (no GitHub account
+needed), checks its SHA-256, and installs it into `~/.local/bin`. Set `SAFEWORLD_CLI_REPO` to
+use another mirror.
