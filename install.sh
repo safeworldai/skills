@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
-# Install the pinned safeworld CLI release into ~/.local/bin, from the public Releases page.
-# Pin, never "latest": the CLI's flags and exit codes are the contract the skills script.
+# Install the safeworld CLI into ~/.local/bin from this repository's public Releases page.
+# A person runs this script, one time per machine:
+#
+#   curl -fsSL https://raw.githubusercontent.com/safeworldai/skills/main/install.sh | bash
+#
+# No GitHub account is necessary. The script checks the SHA-256 of the download.
+# The version is a pin, not "latest": the skills in this repository script the flags and exit
+# codes of this CLI release. Set SAFEWORLD_CLI_VERSION to install another release.
 set -euo pipefail
 VERSION="${SAFEWORLD_CLI_VERSION:-cli-v0.1.5}"
 REPO="${SAFEWORLD_CLI_REPO:-safeworldai/skills}"   # the public release channel; set it to use another mirror
@@ -10,7 +16,7 @@ case "$(uname -s)-$(uname -m)" in
   Darwin-x86_64) target=x86_64-apple-darwin ;;
   Linux-x86_64) target=x86_64-unknown-linux-gnu ;;
   Linux-aarch64) target=aarch64-unknown-linux-gnu ;;
-  *) echo "unsupported platform $(uname -s)-$(uname -m)" >&2; exit 2 ;;
+  *) echo "unsupported platform $(uname -s)-$(uname -m); on Windows, download the .zip from https://github.com/${REPO}/releases" >&2; exit 2 ;;
 esac
 semver="${VERSION#cli-v}"
 asset="safeworld-${semver}-${target}.tar.gz"
@@ -25,4 +31,8 @@ tar -xzf "$tmp/$asset" -C "$tmp"
 mkdir -p "$DEST"
 install -m 0755 "$tmp"/safeworld-*/safeworld "$DEST/safeworld"
 "$DEST/safeworld" --version
-echo "installed to $DEST/safeworld (add $DEST to PATH if needed)"
+echo "installed to $DEST/safeworld"
+case ":$PATH:" in
+  *":$DEST:"*) ;;
+  *) echo "$DEST is not on PATH. Add this line to your shell profile: export PATH=\"$DEST:\$PATH\"" ;;
+esac

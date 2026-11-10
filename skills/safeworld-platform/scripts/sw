@@ -44,7 +44,8 @@ def main(argv: list[str]) -> int:
     binary = shutil.which("safeworld")
     if binary is None:
         print(
-            "sw: the safeworld CLI is not on PATH; run install_safeworld_cli.sh next to this script",
+            "sw: the safeworld CLI is not on PATH; a person installs it with install.sh from "
+            "https://github.com/safeworldai/skills",
             file=sys.stderr,
         )
         return 2

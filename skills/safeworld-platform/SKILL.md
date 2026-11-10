@@ -1,7 +1,7 @@
 ---
 name: safeworld-platform
-description: Run your perception endpoint or your robot brain against SafeWorld platform test suites, by suite name or id, with the safeworld CLI, and read the verdicts and artifacts. Use for a video suite (your perception scored on recorded clips) or a brain suite (your planner as an external brain inside Isaac with realistic humans). Needs a SafeWorld API key (web app, Settings → API Keys) in SAFEWORLD_API_KEY and your organization's SAFEWORLD_API_URL before anything else; step 0 checks both.
-compatibility: Requires network access to the SafeWorld API and a SafeWorld API key minted in the web app under Settings → API Keys; the pinned safeworld CLI (scripts/install_safeworld_cli.sh installs it), ffmpeg 5.1 or later, jq, curl, Python 3 and git; Docker for brain suites.
+description: Run your perception endpoint or your robot brain against SafeWorld platform test suites, by suite name or id, with the safeworld CLI, and read the verdicts and artifacts. Use for a video suite (your perception scored on recorded clips) or a brain suite (your planner as an external brain inside Isaac with realistic humans). Needs the safeworld CLI, installed by a person, plus a SafeWorld API key (web app, Settings → API Keys) in SAFEWORLD_API_KEY and your organization's SAFEWORLD_API_URL before anything else; step 0 checks all three.
+compatibility: Requires network access to the SafeWorld API and a SafeWorld API key minted in the web app under Settings → API Keys; the safeworld CLI on PATH (a person installs it with install.sh from github.com/safeworldai/skills), ffmpeg 5.1 or later, jq, curl, Python 3 and git; Docker for brain suites.
 ---
 
 # SafeWorld platform suites
@@ -31,6 +31,9 @@ It stops at the first missing thing and says how to get it. The platform needs t
 
 Ask the person for them if they are missing. Never write the key into a file in the repo, into
 the ledger, or into chat. Preflight logs the CLI in with the key and prints `preflight: ok`.
+
+A person installs the `safeworld` CLI, not you. If preflight says the CLI is not on PATH, stop and
+give the person the install line that preflight prints. Do not download or install it yourself.
 
 ## Find the suite
 

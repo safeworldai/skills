@@ -10,7 +10,7 @@ fail() { printf 'preflight: %s\n' "$1" >&2; exit 2; }
 for tool in jq curl ffmpeg; do
   command -v "$tool" >/dev/null 2>&1 || fail "$tool is not installed. The CLI decodes suite clips with ffmpeg 5.1 or later; jq and curl read the API listings."
 done
-command -v safeworld >/dev/null 2>&1 || fail "the safeworld CLI is not on PATH. Run: $here/install_safeworld_cli.sh (then put ~/.local/bin on PATH)."
+command -v safeworld >/dev/null 2>&1 || fail "the safeworld CLI is not on PATH. A person installs it, not the agent. Stop and tell the person to run: curl -fsSL https://raw.githubusercontent.com/safeworldai/skills/main/install.sh | bash (then put ~/.local/bin on PATH)."
 
 printf '%s' "$SAFEWORLD_API_KEY" | "$here/sw" auth login --api-key-stdin >/dev/null \
   || fail "auth login failed. Check SAFEWORLD_API_URL ($SAFEWORLD_API_URL) and that the key is current."
