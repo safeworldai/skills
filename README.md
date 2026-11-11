@@ -1,10 +1,10 @@
-# SafeWorld agent skills
+# SafeWorld CLI and agent skill
 
-Skills for coding agents (Claude Code, Codex, Cursor and any other agent that reads `SKILL.md`)
-that test a robot stack on the SafeWorld platform.
+The `safeworld` CLI tests a robot stack on the SafeWorld platform. A coding agent (Claude Code,
+Codex, Cursor and any other agent that reads `SKILL.md`) can drive it for you.
 
-You install the `safeworld` CLI. Your agent reads the skill and drives the CLI. The agent does
-not download or install software.
+You install the CLI and log in. The CLI gives your agent its skill. The agent reads Markdown and
+runs CLI commands. It does not install software, and it never holds your API key.
 
 ## Set up, one time per machine
 
@@ -14,49 +14,74 @@ not download or install software.
 curl -fsSL https://raw.githubusercontent.com/safeworldai/skills/main/install.sh | bash
 ```
 
-[`install.sh`](install.sh) downloads a pinned CLI release from this repository's
+[`install.sh`](install.sh) downloads the newest CLI release from this repository's
 [Releases](https://github.com/safeworldai/skills/releases) page (no GitHub account needed), checks
 its SHA-256, and installs it into `~/.local/bin`. On Windows, download the `.zip` from the
-Releases page and put `safeworld.exe` on `PATH`. Set `SAFEWORLD_CLI_VERSION` to install another
-release, or `SAFEWORLD_CLI_REPO` to use another mirror.
+Releases page and put `safeworld.exe` on `PATH`.
 
-### 2. Give your shell the two platform values
+### 2. Log in
 
-| Variable | Where it comes from |
+```bash
+safeworld auth login --api-url <your organization's API base URL> --api-key
+```
+
+SafeWorld gives you the API base URL with your account. The command asks for an API key. Mint
+one in the SafeWorld web app under **Settings → API Keys**; copy it once, it is not shown again.
+The CLI keeps the key in its own credential file. Do not put the key in your repo or in chat.
+
+### 3. Give the skill to your agent
+
+```bash
+safeworld skill install --dir .claude/skills
+```
+
+| Agent | Directory |
 |---|---|
-| `SAFEWORLD_API_URL` | Your organization's SafeWorld API base URL. SafeWorld gives it to you with your account. |
-| `SAFEWORLD_API_KEY` | An API key you mint in the SafeWorld web app under **Settings → API Keys**. Copy it once; it is not shown again. |
+| Claude Code, in one project | `.claude/skills` |
+| Claude Code, for your user | `~/.claude/skills` |
+| Codex and other agents that read `.agents/skills` | `.agents/skills` |
 
-```bash
-export SAFEWORLD_API_URL=<your organization's API base URL>
-export SAFEWORLD_API_KEY=<the key>
-```
-
-Keep the key out of files in your repo and out of chat.
-
-### 3. Add the skills to your agent
-
-```bash
-npx skills add safeworldai/skills
-```
-
-That installs every skill here for the agents it detects. One skill only:
-`npx skills add safeworldai/skills@safeworld-platform`. Or copy a `skills/<name>/` directory into
-your project's `.claude/skills/`, `.agents/skills/` or `.codex/skills/`.
+`npx skills add safeworldai/skills` installs the same skill for the agents it detects.
 
 ## Use
 
-Ask your agent in plain words, for example: "Run the warehouse video suite against my perception
-endpoint on port 8000." The agent runs the skill's first step, `preflight.sh`. It stops with a
-plain message if the CLI or one of the two values is missing.
+Ask your agent in plain words, for example: "Run the dock clips suite against my perception
+endpoint on port 8000."
 
-## Skills
+The agent reads the installed skill, which is short. It tells the agent to run
+`safeworld skill show`. That command prints the guide for the CLI version on your machine. The
+agent then finds the suite with `safeworld suite list`, runs it, and reports the verdict of each
+item. It stops and tells you when the CLI is missing or the login fails.
 
-| Skill | What it does |
+You can read the same texts:
+
+```bash
+safeworld skill show
+```
+
+```bash
+safeworld skill show perception-endpoint
+```
+
+## What a suite needs
+
+| Suite kind | Needs |
 |---|---|
-| [`safeworld-platform`](skills/safeworld-platform/SKILL.md) | Run your perception endpoint or your robot brain against SafeWorld platform test suites, by suite name or id, with the `safeworld` CLI, and read the verdicts and artifacts. |
+| Video (your perception endpoint on recorded clips) | `ffmpeg` 5.1 or later, `jq`, your endpoint |
+| Simulation (your planner as an external brain) | Docker, your brain container |
 
-## The ledger
+## Upgrade
 
-The skills call the CLI through `scripts/sw`, a wrapper that writes every call and its result to
-`.safeworld/ledger.jsonl` under the current directory (secrets redacted).
+Run the install line again. The guide ships inside the CLI, so it changes with the CLI. Run
+`safeworld skill install --dir <DIR>` again only when the release notes say the skill file changed.
+
+## Pin a release
+
+A CI job must pin its CLI release:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/safeworldai/skills/main/install.sh | SAFEWORLD_CLI_VERSION=cli-v0.2.0 bash
+```
+
+`SAFEWORLD_CLI_DEST` changes the install directory. `SAFEWORLD_CLI_REPO` names another mirror.
+The agent skill needs CLI 0.2.0 or later.

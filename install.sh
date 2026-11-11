@@ -5,12 +5,23 @@
 #   curl -fsSL https://raw.githubusercontent.com/safeworldai/skills/main/install.sh | bash
 #
 # No GitHub account is necessary. The script checks the SHA-256 of the download.
-# The version is a pin, not "latest": the skills in this repository script the flags and exit
-# codes of this CLI release. Set SAFEWORLD_CLI_VERSION to install another release.
+# It installs the newest release. The agent guide ships inside the CLI, so the newest CLI
+# always has the guide that matches it. Set SAFEWORLD_CLI_VERSION (for example cli-v0.2.0)
+# to pin a release, as a CI job must.
 set -euo pipefail
-VERSION="${SAFEWORLD_CLI_VERSION:-cli-v0.1.5}"
 REPO="${SAFEWORLD_CLI_REPO:-safeworldai/skills}"   # the public release channel; set it to use another mirror
 DEST="${SAFEWORLD_CLI_DEST:-$HOME/.local/bin}"
+VERSION="${SAFEWORLD_CLI_VERSION:-}"
+if [ -z "$VERSION" ]; then
+  # /releases/latest redirects to the newest release; its last path part is the tag.
+  latest="$(curl -fsSLI --retry 3 -o /dev/null -w '%{url_effective}' "https://github.com/${REPO}/releases/latest")" \
+    || { echo "cannot find the newest release of ${REPO}; set SAFEWORLD_CLI_VERSION" >&2; exit 2; }
+  VERSION="${latest##*/}"
+fi
+case "$VERSION" in
+  cli-v[0-9]*) ;;
+  *) echo "unexpected release tag '$VERSION' (expected cli-vX.Y.Z); set SAFEWORLD_CLI_VERSION" >&2; exit 2 ;;
+esac
 case "$(uname -s)-$(uname -m)" in
   Darwin-arm64) target=aarch64-apple-darwin ;;
   Darwin-x86_64) target=x86_64-apple-darwin ;;
