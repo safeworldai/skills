@@ -4,9 +4,22 @@ The `safeworld` CLI tests a robot stack on the SafeWorld platform. A coding agen
 Codex, Cursor and any other agent that reads `SKILL.md`) can drive it for you.
 
 You install the CLI and log in. The CLI gives your agent its skill. The agent reads Markdown and
-runs CLI commands. It does not install software, and it never holds your API key.
+runs CLI commands. It installs software only when you ask it to, and it never holds your API
+key.
 
-## Set up, one time per machine
+## Set up with your agent
+
+Paste this line into your coding agent, in your project folder:
+
+```text
+Set up SafeWorld for this project. Read https://github.com/safeworldai/skills and follow the "For agents" section of its README.
+```
+
+The agent installs the CLI and the skill, and it shows you each command. It does not log in for
+you. It asks you to run one command in your own terminal, so your API key never goes into the
+chat.
+
+## Set up by hand, one time per machine
 
 ### 1. Install the `safeworld` CLI
 
@@ -85,3 +98,24 @@ curl -fsSL https://raw.githubusercontent.com/safeworldai/skills/main/install.sh 
 
 `SAFEWORLD_CLI_DEST` changes the install directory. `SAFEWORLD_CLI_REPO` names another mirror.
 The agent skill needs CLI 0.2.0 or later.
+
+## For agents
+
+A person asked you to set up SafeWorld. Do these steps in order. Show each command before you
+run it.
+
+1. **Install the CLI.** Run the install line of step 1 in "Set up by hand". Then run
+   `safeworld --version`. If the shell does not find `safeworld`, add `~/.local/bin` to `PATH`
+   for your commands, and give the person the `export PATH` line that the installer printed.
+2. **Install the skill.** Run `safeworld skill install --dir <DIR>`. `<DIR>` is your own skill
+   directory in this project: `.claude/skills` for Claude Code, `.agents/skills` for Codex. For
+   another agent, use the directory where you load skills.
+3. **Ask the person to log in.** Do not ask for the API key, and do not run the login yourself.
+   The command reads the key from the person's keyboard. Tell the person to run this in their own
+   terminal, and say where the two values come from (step 2 in "Set up by hand"):
+   `safeworld auth login --api-url <API URL> --api-key`
+4. **Check.** When the person says the login is done, run `safeworld suite list`. Exit 0 with a
+   list means the setup is complete. Exit 2 means the login or the URL is wrong: show the message.
+5. **Hand over.** Say that the setup is complete, and give one example request, such as "Run the
+   dock clips suite against my perception endpoint on port 8000." If you do not see the new
+   skill, tell the person to start a new session.
